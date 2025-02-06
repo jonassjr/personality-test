@@ -6,6 +6,7 @@ import { Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
@@ -20,10 +21,30 @@ const RadioGroup = React.forwardRef<
 })
 RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
 
+// const RadioGroupItem = React.forwardRef<
+//   React.ElementRef<typeof RadioGroupPrimitive.Item>,
+//   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
+// >(({ className, ...props }, ref) => {
+//   return (
+//     <RadioGroupPrimitive.Item
+//       ref={ref}
+//       className={cn(
+//         "aspect-square h-4 w-4 rounded-full border border-muted-foreground text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+//         className
+//       )}
+//       {...props}
+//     >
+//       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
+//         <Circle className="h-full w-full fill-muted-foreground stroke-muted-foreground" />
+//       </RadioGroupPrimitive.Indicator>
+//     </RadioGroupPrimitive.Item>
+//   )
+// })
+
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> & { colorClass?: string }
+>(({ className, colorClass = "", ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
@@ -34,11 +55,16 @@ const RadioGroupItem = React.forwardRef<
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <Circle className="h-full w-full fill-muted-foreground stroke-muted-foreground" />
+        <Circle className={cn("h-full w-full", colorClass)} />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )
 })
+
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
 
 export { RadioGroup, RadioGroupItem }
+
+// RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
+
+// export { RadioGroup, RadioGroupItem }
