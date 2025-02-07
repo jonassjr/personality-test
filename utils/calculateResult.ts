@@ -1,4 +1,20 @@
-import { questions } from "@/constants/questions"
+type Question = {
+  id: string,
+  Dimension: string,
+  Direction: string,
+}
+
+let questions: Question[]
+
+try {
+  const response = await fetch("http://localhost:8055/items/MBTI_Questions");
+  const data = await response.json()
+  console.log(data.data)
+  questions = data.data
+} catch (error) {
+  console.error("Erro ao buscar perguntas:", error);
+}
+
 
 export interface Resultado {
   tipo: string
@@ -14,11 +30,11 @@ export const calcularResultado = (respostas: { [key: number]: number }): Resulta
   }
 
   questions.forEach((q) => {
-    const resposta = respostas[q.id];
+    const resposta = respostas[string(q.id)];
     if (resposta !== undefined) {
       const valorCentralizado = resposta - 4;
-      const fator = q.direction === q.dimension[0] ? 1 : -1;
-      dimensaoSoma[q.dimension as keyof typeof dimensaoSoma] += fator * valorCentralizado;
+      const fator = q.Direction === q.Dimension[0] ? 1 : -1;
+      dimensaoSoma[q.Dimension as keyof typeof dimensaoSoma] += fator * valorCentralizado;
     }
   })
 

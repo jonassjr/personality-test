@@ -1,9 +1,9 @@
 "use client"
 
-import { likertOptions, personalityDescriptions, questions } from "@/constants/questions"
+import { likertOptions, personalityDescriptions } from "@/constants/questions"
 import { Progress } from "./ui/progress"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "./ui/button"
 import { calcularResultado, Resultado } from "@/utils/calculateResult"
 
@@ -33,10 +33,30 @@ const getRadioColorClass = (value: number): string => {
   return "";
 }
 
+type Questions = {
+  id: string
+  Text: string,
+}
+
 export const QuestionsDisplay = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [respostas, setRespostas] = useState< {[key: number]: number }>({})
   const [resultado, setResultado] = useState<Resultado | null>(null)
+  const [questions, setQuestions] = useState<Questions[]>([])
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      try {
+        const response = await fetch("http://localhost:8055/items/MBTI_Questions");
+        const data = await response.json()
+        console.log(data.data)
+        setQuestions(data.data)
+      } catch (error) {
+        console.error("Erro ao buscar perguntas:", error);
+      }
+    }
+    fetchQuestions()
+  }, [])
 
   // Função para atualizar a resposta da pergunta atual
   const handleAnswerChange = (questionId: number, value: number) => {
@@ -54,12 +74,16 @@ export const QuestionsDisplay = () => {
     }
   }
 
+  // let currentQuestion
+
+ 
   const currentQuestion = questions[currentIndex]
+  
 
   if (!currentQuestion) return null
 
   const progress = ((currentIndex) / questions.length) * 100
-
+  // const isLastQuestion = perguntas.findIndex(q => q.id === currentQuestion.id) === perguntas.length - 1;
   return (
     <section>
       {resultado ? (
@@ -76,7 +100,7 @@ export const QuestionsDisplay = () => {
         
           <div className="w-full space-y-2">
             <div className="flex justify-between items-center text-sm text-muted-foreground">
-              <span>{`${progress.toFixed(0)} %`}</span>
+              <span className="font-semibold">{`${progress.toFixed(0)}%`}</span>
             </div>
             <Progress value={progress} className="h-2"/>
           </div>
@@ -86,19 +110,16 @@ export const QuestionsDisplay = () => {
               <section className="space-y-8" >
                 <header >
                   <h2 className="text-2xl text-center font-bold tracking-tight text-muted-foreground">
-                    {currentQuestion.text}
+                    {currentQuestion.Text}
                   </h2>
                 </header>
                 <div className="pt-10 flex items-center gap-6">
                   <span className="text-2xl font-semibold text-zinc-600">Concordo</span>
                   <RadioGroup className="w-full flex justify-between"
-                    value={
-                      respostas[currentQuestion.id]
-                        ? String(respostas[currentQuestion.id])
-                        : ""
-                    }
+                    value={respostas[Number(currentQuestion.id)] ? String(respostas[Number(currentQuestion.id)]) : ""}
+                    
                     onValueChange={(value) =>
-                      handleAnswerChange(currentQuestion.id, Number(value))
+                      handleAnswerChange(Number(currentQuestion.id), Number(value))
                     }
                   >
                     {likertOptions.map((option) =>  (
@@ -115,7 +136,7 @@ export const QuestionsDisplay = () => {
                 </div>
 
                   <div className={`flex justify-end transition-opacity duration-300 ${
-                      respostas[currentQuestion.id]
+                      currentQuestion.id in respostas
                         ? 'opacity-100 pointer-events-auto'
                         : 'opacity-0 pointer-events-none'
                     }`}>
