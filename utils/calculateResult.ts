@@ -1,27 +1,24 @@
+export interface Resultado {
+  tipo: string
+  dimensaoSoma: { EI: number; SN: number; TF: number; JP: number }
+}
+
 type Question = {
-  id: string,
-  Dimension: string,
-  Direction: string,
+  id: string
+  Text: string
+  Dimension: string
+  Direction: "first" | "second"
 }
-
-let questions: Question[]
-
-try {
-  const response = await fetch("http://localhost:8055/items/MBTI_Questions");
-  const data = await response.json()
-  console.log(data.data)
-  questions = data.data
-} catch (error) {
-  console.error("Erro ao buscar perguntas:", error);
-}
-
 
 export interface Resultado {
   tipo: string
   dimensaoSoma: { EI: number; SN: number; TF: number; JP: number }
 }
 
-export const calcularResultado = (respostas: { [key: number]: number }): Resultado => {
+export const calcularResultado = (
+  respostas: { [key: number]: number },
+  questions: Question[]
+): Resultado => {
   const dimensaoSoma = {
     EI: 0,
     SN: 0,
@@ -30,11 +27,11 @@ export const calcularResultado = (respostas: { [key: number]: number }): Resulta
   }
 
   questions.forEach((q) => {
-    const resposta = respostas[string(q.id)];
+    const resposta = respostas[Number(q.id)]
     if (resposta !== undefined) {
-      const valorCentralizado = resposta - 4;
-      const fator = q.Direction === q.Dimension[0] ? 1 : -1;
-      dimensaoSoma[q.Dimension as keyof typeof dimensaoSoma] += fator * valorCentralizado;
+      const valorCentralizado = resposta - 4
+      const fator = q.Direction === "first" ? 1 : -1
+      dimensaoSoma[q.Dimension as keyof typeof dimensaoSoma] += fator * valorCentralizado
     }
   })
 

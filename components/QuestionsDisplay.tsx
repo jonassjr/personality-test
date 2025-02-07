@@ -35,7 +35,9 @@ const getRadioColorClass = (value: number): string => {
 
 type Questions = {
   id: string
-  Text: string,
+  Text: string
+  Dimension: string
+  Direction: "first" | "second"
 }
 
 export const QuestionsDisplay = () => {
@@ -70,7 +72,7 @@ export const QuestionsDisplay = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1)
     } else {
-      setResultado(calcularResultado(respostas))
+      setResultado(calcularResultado(respostas, questions))
     }
   }
 
